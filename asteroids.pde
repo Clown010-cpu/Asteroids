@@ -10,15 +10,27 @@ final int GAME = 1;
 final int PAUSE = 2;
 final int GAMEOVER = 3;
 
-int mode = INTRO;
+PVector loc;
+PVector vel;
+float d;
+
 
 boolean upkey, downkey, leftkey, rightkey;
 
 void setup(){
   siz(800,600);
+  mode = INTRO;
   textAlign(CENTER,CENTER);
   rectMode(CENTER);
   
+  loc = new PVector(width/2, height/2);
+  //x = width/2;
+  //y = height/2;
+  d = 100;
+  
+  vel = new PVector(random(-5,5),random(-5,5));
+  //vx = random(-5,5);
+  //vy = random(-5,5);
 }
 
 void draw() {
