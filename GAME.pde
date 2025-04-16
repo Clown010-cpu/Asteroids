@@ -1,13 +1,12 @@
 void game(){
   background(0,255,0);
   
-  circle(x,y,d);
+  circle(loc.x,loc.y,d);
   
-  x = x + vx;
-  y = y + vy;
+loc.add(vel)
   
-  if(y <d/2 || y > height-d/2) vy = -vy;
-   if(y <d/2 || x > height-d/2) vx = -vx;
+  if(loc.y <d/2 || loc.y > height-d/2) vel.y = -vel.y;
+   if(loc.x <d/2 || loc.x > height-d/2) vel.x = -vel.x;
 }
 
 void gameClicks(){
