@@ -1,7 +1,7 @@
-void gameOver(){
+//void gameOver(){
   
-}
+//}
 
-void gameOverClicks(){
+//void gameOverClicks(){
   
-}
+//}

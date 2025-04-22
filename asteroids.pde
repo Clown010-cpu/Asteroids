@@ -5,13 +5,14 @@ color black = #000000;
 color white = #FFFFFF;
 color red = #DD0000
 
-final int INTRO = 0;
+ 
 final int GAME = 1;
 final int PAUSE = 2;
 final int GAMEOVER = 3;
 
 PVector loc;
 PVector vel;
+PVector gravity;
 float d;
 
 
@@ -28,9 +29,12 @@ void setup(){
   //y = height/2;
   d = 100;
   
-  vel = new PVector(random(-5,5),random(-5,5));
+  vel = new PVector(4, 0);
+  vel.rotate(random(0, 2*PI));
   //vx = random(-5,5);
   //vy = random(-5,5);
+  
+  gravity = new PVector(1,0);
 }
 
 void draw() {
