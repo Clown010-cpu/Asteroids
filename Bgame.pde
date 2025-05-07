@@ -3,16 +3,20 @@ color Blue = #89CFF0;
 void game() {
   background(0);
 
-  int i = 0;
-  while (i < objects.size()) {
-    GameObject currentObject = objects.get(i);
-    currentObject.act();
-    currentObject.show();
-    if (currentObject.lives == 0)
-      objects.remove(i);
-    else
-      i++;
-  }
+int i = 0;
+while(i < objects.size()) {
+GameObject currentObject = objects.get(i);
+currentObject.act();
+currentObject.show();
+
+if (currentObject.lives == 0) {
+if (currentObject instanceof Asteroid) player1.asteroidKills++;
+if (currentObject instanceof UFO) player1.ufoKills++;
+objects.remove(i);
+} else {
+i++;
+}
+}
 
   // Check for WIN
   boolean asteroidLeft = false;
