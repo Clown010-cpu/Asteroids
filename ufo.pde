@@ -1,59 +1,62 @@
 class UFO extends GameObject {
-int shootCooldown;
+  int fireCooldown;
 
-UFO() {
-super(random(width), random(height), 1, 1);
-vel.setMag(random(1, 2));
-vel.rotate(random(TWO_PI));
-lives = 3;
-d = 50;
-shootCooldown = 60;
-}
+  UFO() {
+    super(random(1) < 0.5 ? -50 : width + 50, random(height), 0, 0);
+    vel = new PVector(random(1) < 0.5 ? 2 : -2, random(-1, 1));
+    fireCooldown = 120;
+    d = 40;
+  }
 
-void show() {
-fill(255, 0, 0);
-stroke(255);
-ellipse(loc.x, loc.y, d, d / 2);
-ellipse(loc.x, loc.y - 10, d / 2, d / 4);
-fill(255);
-ellipse(loc.x, loc.y - 10, 5, 5); // eye/sensor
-}
+  void show() {
+    fill(255, 0, 255);
+    noStroke();
+    ellipse(loc.x, loc.y, d, d / 2);
+    fill(255);
+    ellipse(loc.x, loc.y - 5, 20, 10);
+  }
 
-void act() {
-loc.add(vel);
-wrapAround();
-checkForCollisions();
-shoot();
-}
+  void act() {
+    loc.add(vel);
+    wrapAround();
+    fireCooldown--;
 
-void shoot() {
-shootCooldown--;
-if (shootCooldown <= 0 && player1.lives > 0) {
-PVector direction = PVector.sub(player1.loc, this.loc);
-direction.setMag(5);
-PVector bulletStart = this.loc.copy();
-objects.add(new EnemyBullet(bulletStart, direction));
-shootCooldown = int(random(60, 120)); // random delay
-}
-}
+    if (fireCooldown <= 0) {
+      fireAtPlayer();
+      fireCooldown = 120;
+    }
 
-void checkForCollisions() {
-for (int i = objects.size() - 1; i >= 0; i--) {
-GameObject obj = objects.get(i);
+    if (loc.x < -60 || loc.x > width + 60) lives = 0;
 
-if (obj instanceof Bullet) {
-if (dist(loc.x, loc.y, obj.loc.x, obj.loc.y) < d / 2 + obj.d / 2) {
-this.lives = 0;
-obj.lives = 0;
-}
-}
+    checkForHit();
+  }
 
-if (obj instanceof Spaceship) {
-if (dist(loc.x, loc.y, obj.loc.x, obj.loc.y) < d / 2 + obj.d / 2) {
-this.lives = 0;
-obj.lives = 0;
-}
-}
-}
-}
+  void fireAtPlayer() {
+    PVector aim = PVector.sub(player1.loc, this.loc).normalize();
+    Bullet b = new Bullet(this.loc, aim, true);
+    objects.add(b);
+  }
+
+  void checkForHit() {
+    for (int i = 0; i < objects.size(); i++) {
+      GameObject obj = objects.get(i);
+      if (obj instanceof Bullet) {
+        Bullet b = (Bullet) obj;
+        if (!b.fromUFO && dist(loc.x, loc.y, b.loc.x, b.loc.y) < d / 2 + b.d / 2) {
+          lives = 0;
+          b.lives = 0;
+
+          for (int p = 0; p < 15; p++) {
+            PVector pv = PVector.random2D().mult(random(1, 2));
+            objects.add(new Particle(loc.copy(), pv, color(255, 0, 255)));
+          }
+
+          totalKills++;
+          if (totalKills % 10 == 0) {
+            objects.add(new UpgradeItem());
+          }
+        }
+      }
+    }
+  }
 }

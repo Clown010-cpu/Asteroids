@@ -4,9 +4,10 @@ class Spaceship extends GameObject {
   int invincibleTimer;
   int teleportCooldown;
   boolean teleportReady = true;
-  int asteroidKills = 0;
-  int ufoKills = 0;
-  boolean upgraded = false;
+
+  // Upgrade system
+  String upgradeType = "";
+  int upgradeTimer = 0;
 
   Spaceship() {
     super(width / 2, height / 2, 0, 0);
@@ -17,17 +18,12 @@ class Spaceship extends GameObject {
   }
 
   void show() {
-    if (invincibleTimer > 0 && frameCount % 10 < 5) return; // Blink
+    if (invincibleTimer > 0 && frameCount % 10 < 5) return;
     pushMatrix();
     translate(loc.x, loc.y);
     rotate(dir.heading());
     drawShip();
     popMatrix();
-    if (upgraded) {
-      fill(0, 255, 0); // Green upgraded ship
-    } else {
-      fill(255);
-    }
   }
 
   void drawShip() {
@@ -45,13 +41,16 @@ class Spaceship extends GameObject {
 
   void act() {
     if (invincibleTimer > 0) invincibleTimer--;
+    if (upgradeTimer > 0) {
+      upgradeTimer--;
+      if (upgradeTimer == 0) upgradeType = "";
+    }
+
     if (teleportCooldown > 0) {
       teleportCooldown--;
       if (teleportCooldown == 0) teleportReady = true;
     }
-    if (!upgraded && (asteroidKills >= 10 || ufoKills >= 1)) {
-      upgrade();
-    }
+
     move();
     shoot();
     checkForCollisions();
@@ -79,9 +78,29 @@ class Spaceship extends GameObject {
 
   void shoot() {
     cooldown--;
+    int fireDelay = upgradeType.equals("rapidFire") ? 10 : 30;
+
     if (spacekey && cooldown <= 0) {
-      objects.add(new Bullet());
-      cooldown = 30;
+      if (upgradeType.equals("tripleShot")) {
+        PVector[] dirs = {
+          dir.copy(),
+          dir.copy().rotate(radians(-10)),
+          dir.copy().rotate(radians(10))
+        };
+        for (PVector d : dirs) {
+          Bullet b = new Bullet(loc.copy(), d, false);
+          objects.add(b);
+        }
+      } else if (upgradeType.equals("doubleShot")) {
+        Bullet left = new Bullet(loc.copy(), dir.copy().rotate(radians(-8)), false);
+        Bullet right = new Bullet(loc.copy(), dir.copy().rotate(radians(8)), false);
+        objects.add(left);
+        objects.add(right);
+      } else {
+        objects.add(new Bullet());
+      }
+
+      cooldown = fireDelay;
     }
   }
 
@@ -106,29 +125,12 @@ class Spaceship extends GameObject {
       if (safe) {
         loc.set(newX, newY);
         teleportReady = false;
-        teleportCooldown = 300; // 5 sec cooldown
+        teleportCooldown = 300;
         return;
       }
       attempts++;
     }
   }
-
-void upgrade() {
-  upgraded = true;
-  println("UPGRADE ACHIEVED!");
-  d += 10; // Slightly bigger ship
-  vel.setMag(min(vel.mag() + 2, 12)); // Boost speed within limits
-  fill(0, 255, 0); // Green ship for visual feedback
-
-  // Optional visual or sound feedback
-  for (int i = 0; i < 20; i++) {
-    PVector pvel = PVector.random2D().mult(random(1, 3));
-    objects.add(new Particle(loc.copy(), pvel, color(0, 255, 0)));
-  }
-
-  // Bonus logic (optional): award a bonus life
-  // lives++;
-}
 
   void checkForCollisions() {
     if (invincibleTimer > 0) return;

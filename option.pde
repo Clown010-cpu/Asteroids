@@ -1,5 +1,6 @@
 void rectButton(String label, float x, float y, float w, float h) {
-  if (mouseX > x - w / 2 && mouseX < x + w / 2 && mouseY > y - h / 2 && mouseY < y + h / 2) {
+  if (mouseX > x - w / 2 && mouseX < x + w / 2 &&
+      mouseY > y - h / 2 && mouseY < y + h / 2) {
     strokeWeight(5);
     stroke(Blue);
     fill(255);

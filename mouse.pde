@@ -16,8 +16,7 @@ void keyPressed() {
   if (keyCode == LEFT) leftkey = true;
   if (keyCode == RIGHT) rightkey = true;
   if (key == ' ') spacekey = true;
-  if (key == 'z' || key == 'Z') player1.teleport(); 
-
+  if (key == 'z' || key == 'Z') player1.teleport();
 }
 
 void keyReleased() {
